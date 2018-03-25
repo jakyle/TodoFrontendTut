@@ -1,0 +1,28 @@
+.Todo-List {
+  Display: flex;
+  justify-content: space-around;
+}
+
+.Todo-item {
+  Display: inline-block;
+  height: 250px;
+  width: 200px;
+  max-height: 200px;
+  max-width: 150px;
+  background-color: lightblue;
+}
+
+.Todo-item h3 {
+  text-align: center
+}
+
+.Todo-item button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 7px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
