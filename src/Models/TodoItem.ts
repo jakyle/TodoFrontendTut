@@ -4,9 +4,3 @@ export default class TodoItem {
   public description: string; 
   public isComplete: boolean; 
 }
-
-export class TodoItemVm {
-  public name: string; 
-  public description: string; 
-  public isComplete?: boolean; 
-}

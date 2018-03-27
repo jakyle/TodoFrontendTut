@@ -1,38 +1,35 @@
-
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import TodoItem, { TodoItemVm } from '../Models/TodoItem';
+import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig, AxiosPromise } from 'axios';
+import TodoItem  from '../Models/TodoItem';
 
 class TodoRequest {
 
-  private readonly _path: string = 'http://localhost:56926/api/TodoItems';
-  private readonly _service: AxiosInstance = axios.create();
+  private _config: AxiosRequestConfig  = {
+    baseURL: 'http://localhost:55260/api/TodoItems',
+    timeout: 2000,
+  };
 
-  public getAll(): Promise<TodoItem[] | string> {
-    return this._service.get(this._path)
-      .then((res: AxiosResponse<TodoItem[]>) => res.data)
-      .catch((err: AxiosError) => err.message);
+  private readonly _service: AxiosInstance = axios.create(this._config);
+
+  public  getAll(): Promise<AxiosResponse<TodoItem[]>> {
+    return  this._service.get('');
   }
 
-  public get(id: number): Promise<TodoItem | string | undefined> {
-    return this._service.get(`${this._path}/${id}`)
-      .then((res: AxiosResponse<TodoItem[]>) => res.data.find((item: TodoItem) => item.id === id))
-      .catch((err: AxiosError) => err.message);
+  public get(id: number): Promise<AxiosResponse<TodoItem>> { 
+     return this._service.get(`/${id}`);
   }
 
-  public post(payload: TodoItemVm): Promise<string | number> {
-    return this._service.post<TodoItemVm>(this._path, payload)
+  public async post(payload: TodoItem): Promise<string | number> {
+    return await this._service.post<TodoItem>('', payload)
       .then((res: AxiosResponse) => res.status)
       .catch((err: AxiosError) => err.message);
   }
 
-  public put(id: number, payload: TodoItemVm): Promise<number | string> {
-    return this._service.put<TodoItemVm>(this._path, payload)
-      .then((res: AxiosResponse) => res.status)
-      .catch((err: AxiosError) => err.message);
+  public put(id: number, payload: TodoItem): AxiosPromise<TodoItem> {
+    return this._service.put<TodoItem>(`/${id}`, payload);
   }
 
-  public delete(id: number): Promise<number | string> {
-    return this._service.delete(`${this._path}/${id}`)
+  public async delete(id: number): Promise<number | string> {
+    return await this._service.delete(`/${id}`)
       .then((res: AxiosResponse) => res.status)
       .catch((err: AxiosError) => err.message);
   }

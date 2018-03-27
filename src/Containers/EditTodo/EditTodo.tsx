@@ -1,16 +1,19 @@
 import * as React from 'react';
-import TodoItem from '../../Models/TodoItem';
+import TodoItem  from '../../Models/TodoItem';
 import TodoRequest from '../../api/TodoRequest';
 import status from '../../api/HttpStatusCode';
 import { RouteComponentProps } from 'react-router';
 import TodoForm from '../../Components/TodoForm/TodoForm';
 
-interface AddtodoState {
+interface EdittodoState {
   todo: TodoItem;
 }
-interface AddtodoProps extends RouteComponentProps<{}> { }
 
-class Addtodo extends React.Component<AddtodoProps, AddtodoState> {
+interface Identifiable {id: string; }
+
+interface EdittodoProps extends RouteComponentProps<Identifiable> { }
+
+class Edittodo extends React.Component<EdittodoProps, EdittodoState> {
 
   public state = {  
     todo: { 
@@ -18,9 +21,15 @@ class Addtodo extends React.Component<AddtodoProps, AddtodoState> {
       name: '',
       description: '',
       isComplete: false,
-    } 
+    },
   };
-  
+
+  public async componentDidMount()  {
+    let id = parseInt(this.props.match.params.id, undefined);
+    await TodoRequest.get(id)
+      .then((res) => this.setState({todo: res.data as TodoItem}));
+  }
+
   public handleChangeFor = (propertyName: string) => (event: React.FormEvent<HTMLInputElement>) => {
     const todoCopy = {...this.state.todo};
     if (propertyName === 'isComplete') {
@@ -34,8 +43,8 @@ class Addtodo extends React.Component<AddtodoProps, AddtodoState> {
 
   public handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    let res = await TodoRequest.post(this.state.todo);
-    if (res === status.CREATED) {
+    let resCode = await TodoRequest.put(this.state.todo.id, this.state.todo).then((res) => res.status);
+    if (resCode === status.NO_CONTENT) {
       this.setState({todo: new TodoItem});
       this.props.history.push('/todos');
     }
@@ -51,4 +60,4 @@ class Addtodo extends React.Component<AddtodoProps, AddtodoState> {
     ;
   }
 }
-export default Addtodo;
+export default Edittodo;

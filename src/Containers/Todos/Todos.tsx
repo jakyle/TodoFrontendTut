@@ -2,11 +2,12 @@ import * as React from 'react';
 import TodoItem from '../../Models/TodoItem';
 import TodoRequest from '../../api/TodoRequest';
 import './Todo.css';
+import { RouteComponentProps } from 'react-router';
 
 export interface FormState {
   items: TodoItem[];
 }
-interface FormProps {
+interface FormProps extends RouteComponentProps<{}> {
 }
 class Todos extends React.Component<FormProps, FormState> {
 
@@ -14,9 +15,9 @@ class Todos extends React.Component<FormProps, FormState> {
     items: new Array<TodoItem>(),
   };
 
-  public componentDidMount(): void {
-    TodoRequest.getAll()
-      .then((items) => this.setState({items: items as TodoItem[]}));
+  public async componentDidMount() {
+    await TodoRequest.getAll()
+      .then((items) => this.setState({items: items.data as TodoItem[]}));
   }
 
   public RemoveHandler = (id: number) => {
@@ -25,15 +26,19 @@ class Todos extends React.Component<FormProps, FormState> {
     this.setState({items: removedItem});
     TodoRequest.delete(id);
   }
+
+  public EditHandler = (id: number) => {
+    this.props.history.push(`/edittodo/${id}`);
+  }
   
   public render() {
-    const {items} = this.state;
-    const itemsList = items.map(item => (
+    const { items } = this.state;
+    const itemsList = items.map((item) => (
       <li className="Todo-item" key={item.id}>
         <h3>{item.name}</h3>
         <h5>{item.description}</h5>
         <button onClick={() => this.RemoveHandler(item.id)}>Remove</button>
-        <button>Edit</button>
+        <button onClick={() => this.EditHandler(item.id)}>Edit</button>
       </li>
     ));
     return (
